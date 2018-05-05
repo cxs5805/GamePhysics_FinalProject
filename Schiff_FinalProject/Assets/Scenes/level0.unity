@@ -88,7 +88,6 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaDirect: 0.5
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
-    m_ShowResolutionOverlay: 1
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -146,6 +145,9 @@ MonoBehaviour:
   adjacencyListObjects:
   - {fileID: 1721530201}
   - {fileID: 2028461841}
+  SPRING: 2.5
+  SPRING_LENGTH: 2
+  FRICTION: 0.97
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}
 --- !u!61 &1570514997
@@ -367,6 +369,9 @@ MonoBehaviour:
   adjacencyListObjects:
   - {fileID: 2028461841}
   - {fileID: 1570514995}
+  SPRING: 2.5
+  SPRING_LENGTH: 2
+  FRICTION: 0.97
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}
 --- !u!1 &1754569238
@@ -472,7 +477,6 @@ Camera:
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
-  m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
@@ -523,6 +527,9 @@ MonoBehaviour:
   adjacencyListObjects:
   - {fileID: 1721530201}
   - {fileID: 1570514995}
+  SPRING: 2.5
+  SPRING_LENGTH: 2
+  FRICTION: 0.97
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}
 --- !u!61 &2028461843

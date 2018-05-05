@@ -15,11 +15,11 @@ public class Mass : MonoBehaviour
     private ClickAndDrag[] draggable;
 
     // properties of the mass itself
-    private const float SPRING = 2.5f;
-    private const float SPRING_LENGTH = 2.0f;
-    private const float FRICTION = 1.0f;
+    public float SPRING = 2.5f;
+    public float SPRING_LENGTH = 2.0f;
+    public float FRICTION = 1.0f;
     private const float MAX_ACC = 1.0f;
-    private const float MAX_VEL = 1.0f;
+    private const float MAX_VEL = 10.0f;
     public Vector3 velocity;
     public Vector3 acceleration;
 
@@ -29,7 +29,7 @@ public class Mass : MonoBehaviour
         // as long as there are connections...
         if (adjacencyListObjects.Count > 0)
         {
-            // ...get all of the ass scripts once at the start
+            // ...get all of the mass scripts once at the start
             adjacencyList = new Mass[adjacencyListObjects.Count];
             draggable = new ClickAndDrag[adjacencyListObjects.Count];
             for (int i = 0; i < adjacencyList.Length; i++)
