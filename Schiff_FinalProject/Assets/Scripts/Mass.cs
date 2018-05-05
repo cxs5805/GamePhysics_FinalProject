@@ -20,6 +20,7 @@ public class Mass : MonoBehaviour
     public float FRICTION = 1.0f;
     private const float MAX_ACC = 1.0f;
     private const float MAX_VEL = 10.0f;
+    public float MIN_VEL = 0.5f;
     public Vector3 velocity;
     public Vector3 acceleration;
 
@@ -79,6 +80,12 @@ public class Mass : MonoBehaviour
         {
             velocity.Normalize();
             velocity *= MAX_VEL;
+        }
+
+        // round velocity down to zero below a certain amount
+        if (velocity.magnitude <= MIN_VEL)
+        {
+            velocity *= 0.0f;
         }
 
         // update postion AFTER capping v and a
