@@ -12,25 +12,30 @@ public class Mass : MonoBehaviour
     // the masses themselves from an object-oriented standpoint. 
     public List<GameObject> adjacencyListObjects;
     private Mass[] adjacencyList;
+    private ClickAndDrag[] draggable;
 
     // properties of the mass itself
-    private const float SPRING = 0.5f;
-    private const float SPRING_LENGTH = 1.0f;
+    private const float SPRING = 2.5f;
+    private const float SPRING_LENGTH = 2.0f;
     private const float FRICTION = 1.0f;
+    private const float MAX_ACC = 1.0f;
     private const float MAX_VEL = 1.0f;
     public Vector3 velocity;
+    public Vector3 acceleration;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start ()
     {
         // as long as there are connections...
         if (adjacencyListObjects.Count > 0)
         {
-            // ...get all of the mass scripts once at the start
+            // ...get all of the ass scripts once at the start
             adjacencyList = new Mass[adjacencyListObjects.Count];
+            draggable = new ClickAndDrag[adjacencyListObjects.Count];
             for (int i = 0; i < adjacencyList.Length; i++)
             {
                 adjacencyList[i] = adjacencyListObjects[i].GetComponent<Mass>();
+                draggable[i] = adjacencyListObjects[i].GetComponent<ClickAndDrag>();
             }
         }
         else
@@ -39,27 +44,48 @@ public class Mass : MonoBehaviour
             Debug.Break();
         }
 
-        // random starting velocity
-        velocity = new Vector3(
-            Random.Range(-1.41f * MAX_VEL, 1.41f * MAX_VEL),
-            Random.Range(-1.41f * MAX_VEL, 1.41f * MAX_VEL));
-	}
-	
-	// Update is called once per frame
-	void Update ()
+        // random starting acceleration and velocity
+        acceleration = new Vector3(
+            Random.Range(-1.41f * MAX_ACC, 1.41f * MAX_ACC),
+            Random.Range(-1.41f * MAX_ACC, 1.41f * MAX_ACC));
+        //velocity = new Vector3(
+        //    Random.Range(-1.41f * MAX_VEL, 1.41f * MAX_VEL),
+        //    Random.Range(-1.41f * MAX_VEL, 1.41f * MAX_VEL));
+
+    }
+
+    // Update is called once per frame
+    void Update ()
     {
         // apply spring forces from all adjacent masses acting on the current mass
-        /*
+        //*
         for (int i = 0; i < adjacencyList.Length; i++)
         {
-            springForce(adjacencyList[i]);
+            if (draggable[i])
+                springForce(adjacencyList[i]);
         }
         //*/
-
+        
         // Euler
+        //velocity += acceleration * Time.deltaTime;
+
+        // cap acceleration and velocity
+        if (acceleration.magnitude >= MAX_ACC)
+        {
+            acceleration.Normalize();
+            acceleration *= MAX_ACC;
+        }
+        if (velocity.magnitude >= MAX_VEL)
+        {
+            velocity.Normalize();
+            velocity *= MAX_VEL;
+        }
+
+        // update postion AFTER capping v and a
         transform.position += velocity * Time.deltaTime;
     }
 
+    // algorithm adapted from TripleSpring flash example
     void springForce(Mass other)
     {
         // spring from here to the other object
@@ -71,6 +97,7 @@ public class Mass : MonoBehaviour
         float targetX = other.transform.position.x - Mathf.Cos(angle) * SPRING_LENGTH;
         float targetY = other.transform.position.y - Mathf.Sin(angle) * SPRING_LENGTH;
 
+        // force is applied directly as an impulse
         velocity.x += (targetX - transform.position.x) * SPRING;
         velocity.y += (targetY - transform.position.y) * SPRING;
         velocity.x *= FRICTION;
