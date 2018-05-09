@@ -15,8 +15,8 @@ public class GameManager : MonoBehaviour
     private Mass[] masses;
 
     // hard-coded constant values for bounds of screen
-    private const float X = 6.0f;
-    private const float Y = 4.4f;
+    private const float X = 6.66f;
+    private const float Y = 5.0f;
 
     // Use this for initialization
     void Start()

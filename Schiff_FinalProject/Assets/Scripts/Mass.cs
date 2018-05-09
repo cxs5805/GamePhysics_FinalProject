@@ -26,6 +26,11 @@ public class Mass : MonoBehaviour
 
     // gravity force constant
     private const float gravity = -2.5f;
+    public float impulseConstant = 20.0f;
+
+    // camera attributes (for bouncing off walls)
+    private GameObject cameraObject;
+    private Camera camera;
 
     // Use this for initialization
     void Start ()
@@ -56,6 +61,10 @@ public class Mass : MonoBehaviour
         //    Random.Range(-1.41f * MAX_VEL, 1.41f * MAX_VEL),
         //    Random.Range(-1.41f * MAX_VEL, 1.41f * MAX_VEL));
         acceleration = new Vector3(0.0f, gravity);
+
+        // get the camera
+        cameraObject = GameObject.FindGameObjectWithTag("MainCamera");
+        camera = cameraObject.GetComponent<Camera>();
     }
 
     // Update is called once per frame
@@ -65,12 +74,19 @@ public class Mass : MonoBehaviour
         for (int i = 0; i < adjacencyList.Length; i++)
         {
             if (draggable[i])
-                springForce(adjacencyList[i]);
+                SpringForce(adjacencyList[i]);
         }
 
-        // apply force of gravity (?)
+        // bounce off the walls
+        // check collisions
+        if (CheckBounds())
+        {
+            // respond
+            Debug.Log("Bounce!");
+        }
 
         // Euler
+        // apply force of gravity
         velocity += acceleration * Time.deltaTime;
 
         // cap acceleration and velocity
@@ -99,7 +115,7 @@ public class Mass : MonoBehaviour
     }
 
     // algorithm adapted from TripleSpring flash example
-    void springForce(Mass other)
+    void SpringForce(Mass other)
     {
         // spring from here to the other object
         float dx = other.transform.position.x - transform.position.x;
@@ -115,5 +131,67 @@ public class Mass : MonoBehaviour
         velocity.y += (targetY - transform.position.y) * SPRING;
         velocity.x *= FRICTION;
         velocity.y *= FRICTION;
+    }
+
+    bool CheckBounds()
+    {
+        // assume it's not colliding
+        bool colliding = false;
+
+        // get position in camera space
+        Vector2 pos = camera.WorldToViewportPoint(transform.position);
+
+        //Debug.Log("(" + pos.x + ", " + pos.y + ")");
+
+        // check
+        if (pos.x < 0 || pos.x > 1 || pos.y < 0 || pos.y > 1)
+        {
+            colliding = true;
+
+            // since it is colliding, respond
+            Bounce(pos, impulseConstant); 
+        }
+
+
+        return colliding;
+    }
+
+    void Bounce(Vector3 pos, float impulseConstant)
+    {
+        //*
+        // apply impulse
+        //impulseConstant = 4.0f;
+        Vector3 impulse = Vector3.zero;
+        Vector3 Max = new Vector3( 6.66f,  5.0f);
+        Vector3 Min = new Vector3(-6.66f, -5.0f);
+
+        // in x
+        if (pos.x < 0)
+        {
+            impulse.x = impulseConstant;
+            //velocity.x = impulseConstant;
+        }
+        else if (pos.x > 1)
+        {
+            impulse.x = -impulseConstant;
+            //velocity.x = -impulseConstant;
+        }
+
+        // in y
+        if (pos.y < 0)
+        {
+            impulse.y = impulseConstant;
+            //velocity.y = impulseConstant;
+        }
+        else if (pos.y > 1)
+        {
+            impulse.y = -impulseConstant;
+            //velocity.y = -impulseConstant;
+        }
+
+        // apply impulse(?)
+        velocity += impulse * Time.deltaTime;
+        //velocity = impulse;
+        //*/
     }
 }
