@@ -19,10 +19,13 @@ public class Mass : MonoBehaviour
     public float SPRING_LENGTH = 2.0f;
     public float FRICTION = 1.0f;
     private const float MAX_ACC = 1.0f;
-    private const float MAX_VEL = 10.0f;
+    public float MAX_VEL = 10.0f;
     public float MIN_VEL = 0.5f;
     public Vector3 velocity;
     public Vector3 acceleration;
+
+    // gravity force constant
+    private const float gravity = -2.5f;
 
     // Use this for initialization
     void Start ()
@@ -46,36 +49,39 @@ public class Mass : MonoBehaviour
         }
 
         // random starting acceleration and velocity
-        acceleration = new Vector3(
-            Random.Range(-1.41f * MAX_ACC, 1.41f * MAX_ACC),
-            Random.Range(-1.41f * MAX_ACC, 1.41f * MAX_ACC));
+        //acceleration = new Vector3(
+        //    Random.Range(-1.41f * MAX_ACC, 1.41f * MAX_ACC),
+        //    Random.Range(-1.41f * MAX_ACC, 1.41f * MAX_ACC));
         //velocity = new Vector3(
         //    Random.Range(-1.41f * MAX_VEL, 1.41f * MAX_VEL),
         //    Random.Range(-1.41f * MAX_VEL, 1.41f * MAX_VEL));
-
+        acceleration = new Vector3(0.0f, gravity);
     }
 
     // Update is called once per frame
     void Update ()
     {
         // apply spring forces from all adjacent masses acting on the current mass
-        //*
         for (int i = 0; i < adjacencyList.Length; i++)
         {
             if (draggable[i])
                 springForce(adjacencyList[i]);
         }
-        //*/
-        
+
+        // apply force of gravity (?)
+
         // Euler
-        //velocity += acceleration * Time.deltaTime;
+        velocity += acceleration * Time.deltaTime;
 
         // cap acceleration and velocity
+        /*
         if (acceleration.magnitude >= MAX_ACC)
         {
             acceleration.Normalize();
             acceleration *= MAX_ACC;
         }
+        //*/
+
         if (velocity.magnitude >= MAX_VEL)
         {
             velocity.Normalize();
