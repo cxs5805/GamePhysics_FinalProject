@@ -285,7 +285,6 @@
     <Compile Include="Assets\Scripts\ClickAndDrag.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Mass.cs" />
-    <Compile Include="Assets\Scripts\Softbody.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

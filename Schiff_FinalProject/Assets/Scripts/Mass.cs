@@ -17,15 +17,16 @@ public class Mass : MonoBehaviour
     // properties of the mass itself
     public float SPRING = 2.5f;
     public float SPRING_LENGTH = 2.0f;
-    public float FRICTION = 1.0f;
+    public float SPRING_FRICTION = 1.0f;
     private const float MAX_ACC = 1.0f;
     public float MAX_VEL = 10.0f;
     public float MIN_VEL = 0.5f;
     public Vector3 velocity;
     public Vector3 acceleration;
+    public float friction;
 
     // gravity force constant
-    private const float gravity = -2.5f;
+    public float gravity = -2.5f;
     public float impulseConstant = 20.0f;
 
     // camera attributes (for bouncing off walls)
@@ -71,15 +72,19 @@ public class Mass : MonoBehaviour
     void Update ()
     {
         // apply spring forces from all adjacent masses acting on the current mass
-        for (int i = 0; i < adjacencyList.Length; i++)
-        {
-            if (draggable[i])
-                SpringForce(adjacencyList[i]);
-        }
+        //if (velocity.magnitude > MIN_VEL)
+        //{
+            for (int i = 0; i < adjacencyList.Length; i++)
+            {
+                if (draggable[i])
+                    SpringForce(adjacencyList[i]);
+            }
+        //}
 
         // bounce off the walls
         // check collisions
-        if (CheckBounds())
+        bool bounds = CheckBounds();
+        if (bounds)
         {
             // respond
             Debug.Log("Bounce!");
@@ -109,6 +114,7 @@ public class Mass : MonoBehaviour
         {
             velocity *= 0.0f;
         }
+        velocity *= friction;
 
         // update postion AFTER capping v and a
         transform.position += velocity * Time.deltaTime;
@@ -129,8 +135,8 @@ public class Mass : MonoBehaviour
         // force is applied directly as an impulse
         velocity.x += (targetX - transform.position.x) * SPRING;
         velocity.y += (targetY - transform.position.y) * SPRING;
-        velocity.x *= FRICTION;
-        velocity.y *= FRICTION;
+        velocity.x *= SPRING_FRICTION;
+        velocity.y *= SPRING_FRICTION;
     }
 
     bool CheckBounds()
@@ -162,32 +168,41 @@ public class Mass : MonoBehaviour
         // apply impulse
         //impulseConstant = 4.0f;
         Vector3 impulse = Vector3.zero;
+
+        // hard-coded values for screen bounds in global space
         Vector3 Max = new Vector3( 6.66f,  5.0f);
         Vector3 Min = new Vector3(-6.66f, -5.0f);
+
+        // where to reposition the mass
+        float newX = transform.position.x;
+        float newY = transform.position.y;
 
         // in x
         if (pos.x < 0)
         {
             impulse.x = impulseConstant;
-            //velocity.x = impulseConstant;
+            newX = Min.x;
         }
         else if (pos.x > 1)
         {
             impulse.x = -impulseConstant;
-            //velocity.x = -impulseConstant;
+            newX = Max.x;
         }
 
         // in y
         if (pos.y < 0)
         {
             impulse.y = impulseConstant;
-            //velocity.y = impulseConstant;
+            newY = Min.y;
         }
         else if (pos.y > 1)
         {
             impulse.y = -impulseConstant;
-            //velocity.y = -impulseConstant;
+            newY = Max.y;
         }
+
+        // reposition
+        transform.position = new Vector3(newX, newY);
 
         // apply impulse(?)
         velocity += impulse * Time.deltaTime;
